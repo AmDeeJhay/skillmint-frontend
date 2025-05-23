@@ -15,7 +15,7 @@ import { ArrowLeft, Github, Link2, Upload, X, Zap } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-export default function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any; onClose: () => void }) {
+export function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any; onClose: () => void }) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("details")
   const [formData, setFormData] = useState({
@@ -450,3 +450,5 @@ export default function ChallengeSubmissionForm({ challenge, onClose }: { challe
     </div>
   )
 }
+
+export default ChallengeSubmissionForm
