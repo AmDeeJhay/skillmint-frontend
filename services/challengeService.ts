@@ -1,6 +1,6 @@
-import axios, { AxiosInstance } from 'axios';
-import BASE_URL from './baseUrl';
-import { Challenge } from '@/types/challenges';
+import axios, { AxiosInstance } from "axios";
+import BASE_URL from "./baseUrl";
+import { Challenge } from "@/types/challenges";
 
 class ChallengeService {
   private api: AxiosInstance;
@@ -9,40 +9,31 @@ class ChallengeService {
     this.api = axios.create({
       baseURL: BASE_URL,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   }
 
   public async fetchChallenges(): Promise<Challenge[]> {
     try {
-      const response = await this.api.get<Challenge[]>('/challenges');
+      const response = await this.api.get<Challenge[]>("/challenges");
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch challenges:', error);
+      console.error("Failed to fetch challenges:", error);
       throw error;
     }
   }
   public async fetchSingleChallenge(challengeId: string): Promise<Challenge> {
     try {
-      const response = await this.api.get<Challenge>(`/challenges/${challengeId}`);
+      const response = await this.api.get<Challenge>(
+        `/challenges/${challengeId}`
+      );
       return response.data;
     } catch (error) {
       console.error(`Failed to fetch challenge with ID ${challengeId}:`, error);
       throw error;
     }
   }
-  
-
-//   public async createChallenge(payload: CreateChallengePayload): Promise<Challenge> {
-//     try {
-//       const response = await this.api.post<Challenge>('/challenges', payload);
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to create challenge:', error);
-//       throw error;
-//     }
-//   }
 }
 
 const challengeService = new ChallengeService();
