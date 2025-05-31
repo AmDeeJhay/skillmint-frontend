@@ -23,6 +23,16 @@ class ChallengeService {
       throw error;
     }
   }
+  public async fetchSingleChallenge(challengeId: string): Promise<Challenge> {
+    try {
+      const response = await this.api.get<Challenge>(`/challenges/${challengeId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to fetch challenge with ID ${challengeId}:`, error);
+      throw error;
+    }
+  }
+  
 
 //   public async createChallenge(payload: CreateChallengePayload): Promise<Challenge> {
 //     try {

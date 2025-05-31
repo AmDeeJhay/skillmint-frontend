@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,13 +12,38 @@ import Link from "next/link"
 import { challengesData } from "@/lib/challenges-data"
 import { ChallengeSubmissionForm } from "@/components/challenge-submission-form"
 import { motion } from "framer-motion"
+import challengeService from "@/services/challengeService"
+import useUIStore from "@/store/useUIStore"
 
 export default function ChallengePage() {
   const params = useParams()
   const challengeId = params.id as string
-  const [showSubmissionForm, setShowSubmissionForm] = useState(false)
+  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [challenge, setChallenge] = useState({});
 
-  const challenge = challengesData.find((c) => c.id === Number.parseInt(challengeId))
+  const { setLoading, setError, clearError } = useUIStore();
+
+  useEffect(() => {
+    const loadChallenge = async () => {
+      setLoading(true);          
+      setError(null);           
+      try {
+        const data = await challengeService.fetchSingleChallenge(challengeId);
+        setChallenge(data);
+      } catch (err) {
+        console.error("Error loading challenges:", err);
+        setError("Failed to load challenges");
+      } finally {
+        setLoading(false);       
+      }
+    };
+
+    loadChallenge();
+  }, [setLoading, setError]);
+
+
+
+  // const challenge = challengesData.find((c) => c.id === Number.parseInt(challengeId))
 
   if (!challenge) {
     return (
