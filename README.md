@@ -49,6 +49,3 @@ In today's digital economy, **skills are currency**, yet verifying them is eithe
 | Frontend | Next.js + Tailwind CSS |
 | AI | OpenAI Whisper (Voice Recognition) |
 | Hosting | Vercel (Frontend), Render(Backend) |
-
-
-

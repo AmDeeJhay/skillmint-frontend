@@ -15,7 +15,15 @@ import { ArrowLeft, Github, Link2, Upload, X, Zap } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-export function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any; onClose: () => void }) {
+export function ChallengeSubmissionForm({
+  challengeId,
+  challengeTitle,
+  onClose,
+}: {
+  challengeId: number
+  challengeTitle: string
+  onClose: () => void
+}) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("details")
   const [formData, setFormData] = useState({
@@ -27,6 +35,19 @@ export function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submissionComplete, setSubmissionComplete] = useState(false)
+
+  const mockChallenge = {
+    id: challengeId,
+    title: challengeTitle,
+    category: "DeFi",
+    difficulty: "Advanced",
+    reward: "500",
+    duration: "4 weeks",
+    deadline: "Dec 31, 2024",
+    bgColor: "bg-blue-100 dark:bg-blue-900/30",
+    color: "text-blue-600 dark:text-blue-400",
+    icon: "💰",
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -89,7 +110,7 @@ export function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any
               <div>
                 <AlertTitle className="text-green-800 dark:text-green-300">Success!</AlertTitle>
                 <AlertDescription className="text-green-700 dark:text-green-400">
-                  Your submission for "{challenge.title}" has been received and is now pending review.
+                  Your submission for "{challengeTitle}" has been received and is now pending review.
                 </AlertDescription>
               </div>
             </Alert>
@@ -104,7 +125,7 @@ export function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any
                 <Button
                   variant="outline"
                   onClick={() => {
-                    router.push(`/challenges/${challenge.id}`)
+                    router.push(`/challenges/${challengeId}`)
                   }}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" /> Back to Challenge
@@ -143,9 +164,7 @@ export function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any
           <Card>
             <CardHeader>
               <CardTitle>Submission Form</CardTitle>
-              <CardDescription>
-                Complete the form below to submit your solution for "{challenge.title}".
-              </CardDescription>
+              <CardDescription>Complete the form below to submit your solution for "{challengeTitle}".</CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -381,14 +400,14 @@ export function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-full ${challenge.bgColor} flex items-center justify-center`}>
-                  <div className={challenge.color}>{challenge.icon}</div>
+                <div className={`w-10 h-10 rounded-full ${mockChallenge.bgColor} flex items-center justify-center`}>
+                  <div className={mockChallenge.color}>{mockChallenge.icon}</div>
                 </div>
                 <div>
-                  <h3 className="font-medium">{challenge.title}</h3>
+                  <h3 className="font-medium">{mockChallenge.title}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline">{challenge.category}</Badge>
-                    <Badge variant="secondary">{challenge.difficulty}</Badge>
+                    <Badge variant="outline">{mockChallenge.category}</Badge>
+                    <Badge variant="secondary">{mockChallenge.difficulty}</Badge>
                   </div>
                 </div>
               </div>
@@ -400,18 +419,18 @@ export function ChallengeSubmissionForm({ challenge, onClose }: { challenge: any
                   <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Reward</h4>
                   <div className="flex items-center mt-1 text-yellow-500 space-x-1">
                     <Zap className="h-4 w-4" />
-                    <span className="font-medium">{challenge.reward} ADA</span>
+                    <span className="font-medium">{mockChallenge.reward} ADA</span>
                   </div>
                 </div>
 
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Duration</h4>
-                  <p className="mt-1">{challenge.duration}</p>
+                  <p className="mt-1">{mockChallenge.duration}</p>
                 </div>
 
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Deadline</h4>
-                  <p className="mt-1">{challenge.deadline}</p>
+                  <p className="mt-1">{mockChallenge.deadline}</p>
                 </div>
               </div>
 
