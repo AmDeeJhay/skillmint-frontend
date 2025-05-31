@@ -40,8 +40,8 @@ export default function ChallengesPage() {
 
   useEffect(() => {
     const loadChallenges = async () => {
-      setLoading(true);          
-      setError(null);           
+      setLoading(true);
+      setError(null);
       try {
         const data = await challengeService.fetchChallenges();
         setChallenges(data);
@@ -49,25 +49,22 @@ export default function ChallengesPage() {
         console.error("Error loading challenges:", err);
         setError("Failed to load challenges");
       } finally {
-        setLoading(false);       
+        setLoading(false);
       }
     };
 
     loadChallenges();
   }, [setLoading, setError]);
 
-  // Filter challenges based on search term and current tab
   const filteredChallenges = challenges.filter((challenge) => {
     const matchesSearch =
       challenge.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       challenge.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTab =
-      currentTab === "all" ||
-      challenge.category === currentTab;
+      currentTab === "all" || challenge.category === currentTab;
     return matchesSearch && matchesTab;
   });
 
-  // Sort challenges based on selected sort option
   const sortedChallenges = [...filteredChallenges].sort((a, b) => {
     switch (sortBy) {
       case "newest":
@@ -87,12 +84,10 @@ export default function ChallengesPage() {
     }
   });
 
-  // Pagination calculations
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentChallenges = sortedChallenges.slice(startIndex, endIndex);
 
-  // Reset to first page when filters change
   useEffect(() => {
     resetPagination();
   }, [searchTerm, sortBy, currentTab, resetPagination]);
@@ -111,26 +106,20 @@ export default function ChallengesPage() {
             <div
               className={`w-10 h-10 rounded-full ${challenge.bgColor} flex items-center justify-center`}
             >
-              <div className={challenge.color}>
-                {challenge.icon}
-              </div>
+              <div className={challenge.color}>{challenge.icon}</div>
             </div>
             <Badge variant="outline" className="font-normal">
               {challenge.category}
             </Badge>
           </div>
-          <CardTitle className="mt-4">
-            {challenge.title}
-          </CardTitle>
+          <CardTitle className="mt-4">{challenge.title}</CardTitle>
           <div className="flex items-center space-x-2 mt-1">
             <Badge variant="secondary" className="text-xs">
               {challenge.difficulty}
             </Badge>
             <div className="flex items-center text-yellow-500 space-x-1">
               <Zap className="h-3.5 w-3.5" />
-              <span className="text-sm font-medium">
-                ${challenge.reward}
-              </span>
+              <span className="text-sm font-medium">${challenge.reward}</span>
             </div>
           </div>
         </CardHeader>
@@ -146,32 +135,21 @@ export default function ChallengesPage() {
             <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
               <Calendar className="h-3.5 w-3.5 mr-1" />
               <span>
-                {challenge.deadline 
+                {challenge.deadline
                   ? `Due ${new Date(challenge.deadline).toLocaleDateString()}`
-                  : 'No deadline'
-                }
+                  : "No deadline"}
               </span>
             </div>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-2 items-center justify-between mt-auto">
           <div className="flex gap-2 w-full">
-            <Link
-              href={`/challenges/${challenge.id}`}
-              className="w-full"
-            >
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full"
-              >
+            <Link href={`/challenges/${challenge.id}`} className="w-full">
+              <Button size="sm" variant="outline" className="w-full">
                 View Details
               </Button>
             </Link>
-            <Link
-              href={`/challenges/${challenge.id}`}
-              className="w-full"
-            >
+            <Link href={`/challenges/${challenge.id}`} className="w-full">
               <Button
                 size="sm"
                 className="bg-teal-600 hover:bg-teal-700 w-full"
@@ -198,7 +176,7 @@ export default function ChallengesPage() {
           </p>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 w-full">
           <Tabs
             defaultValue="all"
             className="w-full"
@@ -267,16 +245,15 @@ export default function ChallengesPage() {
                 </div>
               )}
 
-              <Pagination 
-                totalItems={sortedChallenges.length} 
+              <Pagination
+                totalItems={sortedChallenges.length}
                 className="mt-12"
               />
             </TabsContent>
 
-            {/* Category-specific tabs */}
             {[
               "frontend",
-              "backend", 
+              "backend",
               "devops",
               "mobile",
               "blockchain",
@@ -285,21 +262,24 @@ export default function ChallengesPage() {
               const categoryFilteredChallenges = sortedChallenges.filter(
                 (challenge) => challenge.category === category
               );
-              const categoryChallengesStartIndex = (currentPage - 1) * itemsPerPage;
-              const categoryChallengesEndIndex = categoryChallengesStartIndex + itemsPerPage;
-              const currentCategoryChallenges = categoryFilteredChallenges.slice(
-                categoryChallengesStartIndex, 
-                categoryChallengesEndIndex
-              );
+              const categoryChallengesStartIndex =
+                (currentPage - 1) * itemsPerPage;
+              const categoryChallengesEndIndex =
+                categoryChallengesStartIndex + itemsPerPage;
+              const currentCategoryChallenges =
+                categoryFilteredChallenges.slice(
+                  categoryChallengesStartIndex,
+                  categoryChallengesEndIndex
+                );
 
               return (
                 <TabsContent key={category} value={category} className="mt-0">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {currentCategoryChallenges.map(renderChallengeCard)}
                   </div>
-                  
-                  <Pagination 
-                    totalItems={categoryFilteredChallenges.length} 
+
+                  <Pagination
+                    totalItems={categoryFilteredChallenges.length}
                     className="mt-12"
                   />
                 </TabsContent>
