@@ -6,5 +6,6 @@ export default function AppLayout({
 }: {
   children: React.ReactNode
 }) {
+  
   return <DashboardLayout>{children}</DashboardLayout>
 }
