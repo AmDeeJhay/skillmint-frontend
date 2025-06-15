@@ -14,7 +14,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
   const pathname = usePathname()
-  const { isConnected, connect } = useWallet()
+  const { isConnected } = useWallet()
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between max-w-7xl mx-auto px-4">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center space-x-2">
             <motion.div whileHover={{ rotate: 180 }} transition={{ duration: 0.5 }}>
@@ -57,7 +57,7 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           <Link
             href="/challenges"
-            className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 ${
+            className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors ${
               pathname === "/challenges" ? "text-teal-600 dark:text-teal-400" : ""
             }`}
           >
@@ -65,7 +65,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/leaderboard"
-            className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 ${
+            className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors ${
               pathname === "/leaderboard" ? "text-teal-600 dark:text-teal-400" : ""
             }`}
           >
@@ -73,7 +73,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/how-it-works"
-            className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 ${
+            className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors ${
               pathname === "/how-it-works" ? "text-teal-600 dark:text-teal-400" : ""
             }`}
           >
@@ -81,7 +81,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/about"
-            className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 ${
+            className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors ${
               pathname === "/about" ? "text-teal-600 dark:text-teal-400" : ""
             }`}
           >
@@ -89,7 +89,7 @@ export default function Navbar() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <ModeToggle />
           {isConnected ? (
             <>
@@ -114,11 +114,16 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden border-t p-4">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="md:hidden border-t p-4"
+        >
           <nav className="flex flex-col space-y-4">
             <Link
               href="/challenges"
-              className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 ${
+              className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors ${
                 pathname === "/challenges" ? "text-teal-600 dark:text-teal-400" : ""
               }`}
             >
@@ -126,7 +131,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/leaderboard"
-              className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 ${
+              className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors ${
                 pathname === "/leaderboard" ? "text-teal-600 dark:text-teal-400" : ""
               }`}
             >
@@ -134,7 +139,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/how-it-works"
-              className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 ${
+              className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors ${
                 pathname === "/how-it-works" ? "text-teal-600 dark:text-teal-400" : ""
               }`}
             >
@@ -142,7 +147,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/about"
-              className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 ${
+              className={`text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors ${
                 pathname === "/about" ? "text-teal-600 dark:text-teal-400" : ""
               }`}
             >
@@ -166,7 +171,7 @@ export default function Navbar() {
               )}
             </div>
           </nav>
-        </div>
+        </motion.div>
       )}
 
       <WalletConnectModal open={isWalletModalOpen} onOpenChange={setIsWalletModalOpen} />

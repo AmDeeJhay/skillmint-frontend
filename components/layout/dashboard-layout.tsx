@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import {
@@ -21,7 +20,7 @@ import {
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Home, Award, HelpCircle, Info, Settings, LogOut, Wallet, User, BarChart3, Zap } from "lucide-react"
+import { Home, Award, HelpCircle, Info, Settings, LogOut, Wallet, User, BarChart3, Zap, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useWallet } from "@/hooks/use-wallet"
 import { motion } from "framer-motion"
@@ -42,10 +41,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Sidebar className="border-r border-gray-200 dark:border-gray-800">
-          <SidebarHeader className="px-3 py-2">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-teal-600 dark:bg-teal-700">
+        <Sidebar className="border-r border-gray-200 dark:border-gray-800 hidden md:flex">
+          <SidebarHeader className="px-4 py-4">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 dark:bg-teal-700">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -56,7 +55,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="h-5 w-5 text-white"
+                  className="h-6 w-6 text-white"
                 >
                   <path d="M12 2L5 12l7 10 7-10z" />
                   <path d="M5 12l7-10 7 10" />
@@ -67,11 +66,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="font-bold text-xl">SkillMint</div>
             </Link>
           </SidebarHeader>
+
           <SidebarContent className="px-3 py-2">
             <SidebarGroup>
               <SidebarGroupLabel>Navigation</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname === "/"}>
+                      <Link href="/">
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        <span>Back to Home</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
                       <Link href="/dashboard">
@@ -156,39 +164,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </>
             )}
           </SidebarContent>
+
           <SidebarFooter className="border-t border-gray-200 dark:border-gray-800 p-4">
-            {isConnected ? (
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">John Doe</span>
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                      <Zap className="h-3 w-3 mr-1 text-yellow-500" />
-                      <span>500 ADA earned</span>
-                    </div>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                  onClick={disconnect}
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Disconnect
-                </Button>
-              </div>
-            ) : (
+            <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Theme</span>
                 <ModeToggle />
               </div>
-            )}
+
+              {isConnected ? (
+                <>
+                  <SidebarSeparator />
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
+                      <AvatarFallback>JD</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <span className="text-sm font-medium truncate">John Doe</span>
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                        <Zap className="h-3 w-3 mr-1 text-yellow-500" />
+                        <span>500 ADA earned</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    onClick={disconnect}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Disconnect
+                  </Button>
+                </>
+              ) : null}
+            </div>
           </SidebarFooter>
         </Sidebar>
+
         <div className="flex-1 overflow-auto">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -196,7 +210,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             transition={{ duration: 0.3 }}
             className="h-full"
           >
-            {children}
+            <div className="container mx-auto px-4 py-6 max-w-7xl">{children}</div>
           </motion.div>
         </div>
       </div>
