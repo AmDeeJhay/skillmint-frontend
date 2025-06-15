@@ -1,4 +1,4 @@
-//const BASE_URL = "http://localhost:6960"
+// For development, we'll use a mock API or fallback to local data
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.skillmint.dev"
 
-const BASE_URL = "https://skillmint-backend.onrender.com"
-export default BASE_URL;
+export default BASE_URL
