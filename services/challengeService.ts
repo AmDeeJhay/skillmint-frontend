@@ -39,19 +39,34 @@ class ChallengeService {
 
   public async fetchSingleChallenge(challengeId: string): Promise<Challenge | null> {
     try {
-      // Try to find in local data first
-      const localChallenge = this.fallbackData.find((challenge) => challenge.id === challengeId)
+      console.log(`Fetching challenge with ID: ${challengeId}`)
+
+      // Convert string ID to number for comparison with local data
+      const numericId = Number.parseInt(challengeId, 10)
+
+      // Always use local data first to avoid network issues
+      const localChallenge = this.fallbackData.find((challenge) => {
+        // Handle both string and number ID comparisons
+        return challenge.id === numericId || challenge.id === challengeId || challenge.id.toString() === challengeId
+      })
+
       if (localChallenge) {
+        console.log(`Found challenge locally:`, localChallenge.title)
         return localChallenge
       }
 
-      // If not found locally, try API
-      const response = await this.api.get<Challenge>(`/challenges/${challengeId}`)
-      return response.data
+      console.warn(`Challenge with ID ${challengeId} not found in local data`)
+      return null
     } catch (error) {
       console.error(`Failed to fetch challenge with ID ${challengeId}:`, error)
-      // Return local challenge if available
-      return this.fallbackData.find((challenge) => challenge.id === challengeId) || null
+
+      // Fallback: try to find in local data even if there's an error
+      const numericId = Number.parseInt(challengeId, 10)
+      const fallbackChallenge = this.fallbackData.find(
+        (challenge) => challenge.id === numericId || challenge.id.toString() === challengeId,
+      )
+
+      return fallbackChallenge || null
     }
   }
 
@@ -63,6 +78,11 @@ class ChallengeService {
     } catch {
       return false
     }
+  }
+
+  // Method to get all available challenge IDs
+  public getAvailableChallengeIds(): string[] {
+    return this.fallbackData.map((challenge) => challenge.id.toString())
   }
 }
 

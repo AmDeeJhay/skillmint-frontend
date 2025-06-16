@@ -1,57 +1,149 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Calendar, Clock, Zap, Users, CheckCircle, ArrowLeft, ExternalLink, FileText, Code, Award } from "lucide-react"
+import {
+  Calendar,
+  Clock,
+  Zap,
+  Users,
+  CheckCircle,
+  ArrowLeft,
+  ExternalLink,
+  FileText,
+  Code,
+  Award,
+  AlertCircle,
+} from "lucide-react"
 import Link from "next/link"
-import { challengesData } from "@/lib/challenges-data"
 import { ChallengeSubmissionForm } from "@/components/challenge-submission-form"
 import { motion } from "framer-motion"
 import challengeService from "@/services/challengeService"
-import useUIStore from "@/store/useUIStore"
+import type { Challenge } from "@/types/challenges"
 
 export default function ChallengePage() {
   const params = useParams()
+  const router = useRouter()
   const challengeId = params.id as string
-  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
-  const [challenge, setChallenge] = useState({});
-
-  const { setLoading, setError, clearError } = useUIStore();
+  const [showSubmissionForm, setShowSubmissionForm] = useState(false)
+  const [challenge, setChallenge] = useState<Challenge | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const loadChallenge = async () => {
-      setLoading(true);          
-      setError(null);           
-      try {
-        const data = await challengeService.fetchSingleChallenge(challengeId);
-        setChallenge(data);
-      } catch (err) {
-        console.error("Error loading challenges:", err);
-        setError("Failed to load challenges");
-      } finally {
-        setLoading(false);       
+      if (!challengeId) {
+        setError("Invalid challenge ID")
+        setIsLoading(false)
+        return
       }
-    };
 
-    loadChallenge();
-  }, [setLoading, setError]);
+      setIsLoading(true)
+      setError(null)
 
+      try {
+        console.log(`Loading challenge with ID: ${challengeId}`)
+        const data = await challengeService.fetchSingleChallenge(challengeId)
 
+        if (data) {
+          setChallenge(data)
+          console.log(`Successfully loaded challenge: ${data.title}`)
+        } else {
+          setError(`Challenge with ID ${challengeId} not found`)
+          console.error(`Challenge not found for ID: ${challengeId}`)
 
-  // const challenge = challengesData.find((c) => c.id === Number.parseInt(challengeId))
+          // Show available IDs for debugging
+          const availableIds = challengeService.getAvailableChallengeIds()
+          console.log("Available challenge IDs:", availableIds)
+        }
+      } catch (err) {
+        console.error("Error loading challenge:", err)
+        setError("Failed to load challenge")
+      } finally {
+        setIsLoading(false)
+      }
+    }
 
-  if (!challenge) {
+    loadChallenge()
+  }, [challengeId])
+
+  // Loading state
+  if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-2xl font-bold mb-4">Challenge Not Found</h1>
-        <Link href="/challenges">
-          <Button>Back to Challenges</Button>
-        </Link>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Link href="/challenges">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        </div>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="h-8 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4" />
+                <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error || !challenge) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Link href="/challenges">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+          <AlertCircle className="h-16 w-16 text-gray-400 mb-4" />
+          <h1 className="text-2xl font-bold mb-2">Challenge Not Found</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {error || `The challenge with ID "${challengeId}" could not be found.`}
+          </p>
+          <div className="flex gap-4">
+            <Link href="/challenges">
+              <Button>Back to Challenges</Button>
+            </Link>
+            <Button variant="outline" onClick={() => router.refresh()}>
+              Try Again
+            </Button>
+          </div>
+        </div>
       </div>
     )
   }
@@ -100,7 +192,7 @@ export default function ChallengePage() {
   ]
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -125,7 +217,7 @@ export default function ChallengePage() {
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
                     <CardTitle className="text-2xl">{challenge.title}</CardTitle>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 flex-wrap">
                       <Badge variant="secondary">{challenge.difficulty}</Badge>
                       <div className="flex items-center text-yellow-500 gap-1">
                         <Zap className="h-4 w-4" />
@@ -370,7 +462,7 @@ export default function ChallengePage() {
 
       {showSubmissionForm && (
         <ChallengeSubmissionForm
-          challengeId={challenge.id}
+          challengeId={challenge.id.toString()}
           challengeTitle={challenge.title}
           onClose={() => setShowSubmissionForm(false)}
         />
