@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Award, Calendar, CheckCircle, Code, FileText, Paintbrush, Zap, Trophy } from "lucide-react"
+import { Award, Calendar, CheckCircle, Code, FileText, Paintbrush, Zap, Trophy, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import RecentActivities from "@/components/dashboard/recent-activities"
@@ -115,11 +115,22 @@ export default function DashboardPage() {
       setLoading(true)
       setError(null)
       try {
+        console.log("Loading user data...")
         const data = await dashboardService.fetchUserData(userId)
+        console.log("User data loaded successfully:", data)
         setUserData(data)
       } catch (err) {
         console.error("Error loading user data:", err)
         setError("Failed to load user data")
+
+        // Fallback to mock data even if service fails
+        try {
+          const mockData = dashboardService.getMockUserData()
+          setUserData(mockData)
+          console.log("Using fallback mock data")
+        } catch (fallbackErr) {
+          console.error("Fallback also failed:", fallbackErr)
+        }
       } finally {
         setLoading(false)
       }
@@ -127,6 +138,24 @@ export default function DashboardPage() {
 
     loadUserData()
   }, [setLoading, setError])
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-96 mt-2 animate-pulse"></div>
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   if (!loading && (error || !userData)) {
     return (
@@ -201,7 +230,10 @@ export default function DashboardPage() {
           </p>
         </div>
         <Link href="/challenges">
-          <Button className="bg-teal-600 hover:bg-teal-700">Browse Challenges</Button>
+          <Button className="bg-teal-600 hover:bg-teal-700">
+            Browse Challenges
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
         </Link>
       </div>
 
@@ -213,10 +245,10 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
           >
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                     {stat.icon}
                   </div>
                   <div
@@ -240,13 +272,13 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Tabs defaultValue="active" className="w-full">
-            <TabsList>
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="active">Active Challenges</TabsTrigger>
               <TabsTrigger value="created">Created Challenges</TabsTrigger>
               <TabsTrigger value="badges">NFT Badges</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="active" className="mt-4">
+            <TabsContent value="active" className="mt-6">
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <CardTitle>Your Active Challenges</CardTitle>
@@ -262,28 +294,31 @@ export default function DashboardPage() {
                       </Link>
                     </div>
                   ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       {activeChallenges?.map((challenge) => {
                         const categoryColors = getCategoryColor(challenge.category)
                         return (
                           <motion.div
                             key={challenge.id}
                             whileHover={{ x: 5 }}
-                            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4"
+                            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4 hover:shadow-sm transition-shadow"
                           >
                             <div className="flex items-center gap-4">
                               <div
-                                className={`w-10 h-10 rounded-full ${categoryColors.bg} flex items-center justify-center`}
+                                className={`w-12 h-12 rounded-xl ${categoryColors.bg} flex items-center justify-center`}
                               >
                                 <div className={categoryColors.text}>{getCategoryIcon(challenge.category)}</div>
                               </div>
                               <div>
                                 <h3 className="font-medium">{challenge.title}</h3>
                                 <div className="flex flex-wrap items-center gap-2 mt-1">
-                                  <Badge variant="outline" className="capitalize">
+                                  <Badge variant="outline" className="capitalize text-xs">
                                     {challenge.category.replace("_", " ")}
                                   </Badge>
-                                  <Badge variant={getDifficultyVariant(challenge.difficulty)} className="capitalize">
+                                  <Badge
+                                    variant={getDifficultyVariant(challenge.difficulty)}
+                                    className="capitalize text-xs"
+                                  >
                                     {challenge.difficulty}
                                   </Badge>
                                   <div className="flex items-center text-yellow-500 space-x-1">
@@ -292,11 +327,9 @@ export default function DashboardPage() {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-4 mt-2">
-                                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
-                                    <Badge variant="outline" className="text-xs">
-                                      {challenge.status}
-                                    </Badge>
-                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {challenge.status}
+                                  </Badge>
                                   {challenge.deadline && (
                                     <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
                                       <Calendar className="h-3.5 w-3.5 mr-1" />
@@ -327,7 +360,7 @@ export default function DashboardPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="created" className="mt-4">
+            <TabsContent value="created" className="mt-6">
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <CardTitle>Created Challenges</CardTitle>
@@ -343,13 +376,13 @@ export default function DashboardPage() {
                       </Link>
                     </div>
                   ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       {userData?.createdChallenges.map((challenge) => {
                         const categoryColors = getCategoryColor(challenge.category)
                         return (
-                          <div key={challenge.id} className="flex items-start gap-4">
+                          <div key={challenge.id} className="flex items-start gap-4 p-4 border rounded-lg">
                             <div
-                              className={`w-10 h-10 rounded-full ${categoryColors.bg} flex items-center justify-center`}
+                              className={`w-12 h-12 rounded-xl ${categoryColors.bg} flex items-center justify-center`}
                             >
                               <div className={categoryColors.text}>{getCategoryIcon(challenge.category)}</div>
                             </div>
@@ -357,15 +390,20 @@ export default function DashboardPage() {
                               <div className="flex items-center justify-between">
                                 <h3 className="font-medium">{challenge.title}</h3>
                                 <div className="flex items-center gap-2">
-                                  <Badge variant="outline" className="capitalize">
+                                  <Badge variant="outline" className="capitalize text-xs">
                                     {challenge.status}
                                   </Badge>
-                                  <Badge variant={getDifficultyVariant(challenge.difficulty)} className="capitalize">
+                                  <Badge
+                                    variant={getDifficultyVariant(challenge.difficulty)}
+                                    className="capitalize text-xs"
+                                  >
                                     {challenge.difficulty}
                                   </Badge>
                                 </div>
                               </div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{challenge.description}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                                {challenge.description}
+                              </p>
                               <div className="flex items-center justify-between mt-2">
                                 <span className="text-sm text-gray-500 dark:text-gray-400">
                                   Created on {formatDate(challenge.createdAt)}
@@ -385,7 +423,7 @@ export default function DashboardPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="badges" className="mt-4">
+            <TabsContent value="badges" className="mt-6">
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <CardTitle>Your NFT Badges</CardTitle>
@@ -399,19 +437,24 @@ export default function DashboardPage() {
                       <p className="text-sm text-gray-400 mt-2">Complete challenges to earn skill badges!</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {userData?.badges.map((badge) => (
-                        <Card key={badge.id} className="overflow-hidden border-0 shadow-sm">
+                        <Card
+                          key={badge.id}
+                          className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow"
+                        >
                           <CardContent className="p-6">
                             <div className="flex flex-col items-center text-center">
-                              <div className="w-20 h-20 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
-                                <Award className="h-10 w-10 text-purple-600 dark:text-purple-400" />
+                              <div className="w-16 h-16 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
+                                <Award className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                               </div>
                               <h3 className="font-medium">{badge.name}</h3>
                               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 Earned on {formatDate(badge.earnedAt)}
                               </p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{badge.description}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">
+                                {badge.description}
+                              </p>
                               <Button variant="outline" size="sm" className="mt-4">
                                 View on Chain
                               </Button>
@@ -426,6 +469,7 @@ export default function DashboardPage() {
             </TabsContent>
           </Tabs>
         </div>
+
         <div className="space-y-6">
           <RecentActivities />
           <RecentEarners />
