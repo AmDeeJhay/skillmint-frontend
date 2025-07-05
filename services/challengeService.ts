@@ -3,6 +3,14 @@ import BASE_URL from "./baseUrl"
 import type { Challenge } from "@/types/challenges"
 import { challengesData } from "@/lib/challenges-data"
 
+interface ChallengesResponse {
+  challenges: Challenge[]
+  total: number
+  limit: number
+  offset: number
+  hasMore: boolean
+}
+
 class ChallengeService {
   private api: AxiosInstance
   private fallbackData: Challenge[] = challengesData
@@ -10,7 +18,7 @@ class ChallengeService {
   constructor() {
     this.api = axios.create({
       baseURL: BASE_URL,
-      timeout: 5000, // 5 second timeout
+      timeout: 10000, // 10 second timeout
       headers: {
         "Content-Type": "application/json",
       },
@@ -26,27 +34,72 @@ class ChallengeService {
     )
   }
 
-  public async fetchChallenges(): Promise<Challenge[]> {
+  public async fetchChallenges(filters?: {
+    category?: string
+    difficulty?: string
+    status?: string
+    limit?: number
+    offset?: number
+  }): Promise<Challenge[]> {
     try {
-      // Always return local data for now to avoid network issues
-      console.log("Using local challenges data for reliable experience")
-      return this.fallbackData
+      console.log("Fetching challenges from API...")
+
+      const params = new URLSearchParams()
+      if (filters?.category) params.append("category", filters.category)
+      if (filters?.difficulty) params.append("difficulty", filters.difficulty)
+      if (filters?.status) params.append("status", filters.status)
+      if (filters?.limit) params.append("limit", filters.limit.toString())
+      if (filters?.offset) params.append("offset", filters.offset.toString())
+
+      const response = await this.api.get<ChallengesResponse>(`/challenges?${params.toString()}`)
+      console.log(`Successfully fetched ${response.data.challenges.length} challenges from API`)
+
+      return response.data.challenges
     } catch (error) {
-      console.error("Unexpected error in fetchChallenges:", error)
-      return this.fallbackData
+      console.warn("API request failed, using fallback data:", error)
+
+      // Apply filters to fallback data
+      let filteredData = [...this.fallbackData]
+
+      if (filters?.category && filters.category !== "all") {
+        filteredData = filteredData.filter((c) => c.category === filters.category)
+      }
+
+      if (filters?.difficulty) {
+        filteredData = filteredData.filter((c) => c.difficulty === filters.difficulty)
+      }
+
+      if (filters?.status) {
+        filteredData = filteredData.filter((c) => c.status === filters.status)
+      }
+
+      // Apply pagination to fallback data
+      if (filters?.offset || filters?.limit) {
+        const offset = filters.offset || 0
+        const limit = filters.limit || filteredData.length
+        filteredData = filteredData.slice(offset, offset + limit)
+      }
+
+      return filteredData
     }
   }
 
   public async fetchSingleChallenge(challengeId: string): Promise<Challenge | null> {
     try {
-      console.log(`Fetching challenge with ID: ${challengeId}`)
+      console.log(`Fetching challenge ${challengeId} from API...`)
+
+      const response = await this.api.get<Challenge>(`/challenges/${challengeId}`)
+      console.log(`Successfully fetched challenge: ${response.data.title}`)
+
+      return response.data
+    } catch (error) {
+      console.warn(`API request failed for challenge ${challengeId}, using fallback data:`, error)
 
       // Convert string ID to number for comparison with local data
       const numericId = Number.parseInt(challengeId, 10)
 
-      // Always use local data first to avoid network issues
+      // Use fallback data
       const localChallenge = this.fallbackData.find((challenge) => {
-        // Handle both string and number ID comparisons
         return challenge.id === numericId || challenge.id === challengeId || challenge.id.toString() === challengeId
       })
 
@@ -55,25 +108,57 @@ class ChallengeService {
         return localChallenge
       }
 
-      console.warn(`Challenge with ID ${challengeId} not found in local data`)
+      console.warn(`Challenge with ID ${challengeId} not found`)
       return null
+    }
+  }
+
+  public async createChallenge(challengeData: Partial<Challenge>): Promise<Challenge | null> {
+    try {
+      console.log("Creating new challenge...")
+
+      const response = await this.api.post<Challenge>("/challenges", challengeData)
+      console.log(`Successfully created challenge: ${response.data.title}`)
+
+      return response.data
     } catch (error) {
-      console.error(`Failed to fetch challenge with ID ${challengeId}:`, error)
+      console.error("Failed to create challenge:", error)
+      return null
+    }
+  }
 
-      // Fallback: try to find in local data even if there's an error
-      const numericId = Number.parseInt(challengeId, 10)
-      const fallbackChallenge = this.fallbackData.find(
-        (challenge) => challenge.id === numericId || challenge.id.toString() === challengeId,
-      )
+  public async updateChallenge(challengeId: string, updates: Partial<Challenge>): Promise<Challenge | null> {
+    try {
+      console.log(`Updating challenge ${challengeId}...`)
 
-      return fallbackChallenge || null
+      const response = await this.api.put<Challenge>(`/challenges/${challengeId}`, updates)
+      console.log(`Successfully updated challenge: ${response.data.title}`)
+
+      return response.data
+    } catch (error) {
+      console.error(`Failed to update challenge ${challengeId}:`, error)
+      return null
+    }
+  }
+
+  public async deleteChallenge(challengeId: string): Promise<boolean> {
+    try {
+      console.log(`Deleting challenge ${challengeId}...`)
+
+      await this.api.delete(`/challenges/${challengeId}`)
+      console.log(`Successfully deleted challenge ${challengeId}`)
+
+      return true
+    } catch (error) {
+      console.error(`Failed to delete challenge ${challengeId}:`, error)
+      return false
     }
   }
 
   // Method to check API health
   public async checkApiHealth(): Promise<boolean> {
     try {
-      await this.api.get("/health", { timeout: 2000 })
+      await this.api.get("/health")
       return true
     } catch {
       return false
@@ -83,27 +168,6 @@ class ChallengeService {
   // Method to get all available challenge IDs
   public getAvailableChallengeIds(): string[] {
     return this.fallbackData.map((challenge) => challenge.id.toString())
-  }
-
-  // REST API integration for /challenges endpoints
-  public createChallenge(data: any) {
-    return this.api.post("/challenges", data)
-  }
-
-  public getAllChallenges() {
-    return this.api.get("/challenges")
-  }
-
-  public getChallengeById(id: string) {
-    return this.api.get(`/challenges/${id}`)
-  }
-
-  public updateChallenge(id: string, data: any) {
-    return this.api.patch(`/challenges/${id}`, data)
-  }
-
-  public deleteChallenge(id: string) {
-    return this.api.delete(`/challenges/${id}`)
   }
 }
 

@@ -19,7 +19,7 @@ In today's digital economy, **skills are currency**, yet verifying them is eithe
 
 | Feature | Description |
 |--------|-------------|
-| 🧩 Challenge Posting | Organizations or individuals can post challenges with criteria and rewards |
+| 🧩 Challenge Posting | Verified Organizations or individuals can post challenges with criteria and rewards |
 | 👨‍💻 Submission System | Users submit GitHub repo links as solutions (GitHub OAuth required) |
 | 🧠 Human Verification | Experts manually approve/disapprove submitted work |
 | 🔗 Wallet Auth | Users sign in using their Cardano wallet |

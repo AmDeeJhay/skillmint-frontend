@@ -22,26 +22,26 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-teal-50 to-white dark:from-gray-900 dark:to-gray-950">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+      <section className="w-full py-8 md:py-16 lg:py-24 bg-gradient-to-b from-teal-50 to-white dark:from-gray-900 dark:to-gray-950">
+        <div className="container px-6 md:px-8 mx-auto max-w-7xl">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
             <motion.div
-              className="flex flex-col justify-center space-y-4"
+              className="flex flex-col justify-center space-y-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-block px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-100 text-sm font-medium mb-2">
+              <div className="inline-block px-4 py-2 rounded-full bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-100 text-sm font-medium mb-4 w-fit">
                 Decentralized Skill Verification
               </div>
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
                 Prove Your Skills, <span className="text-teal-600 dark:text-teal-400">Earn Rewards</span>
               </h1>
-              <p className="text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+              <p className="text-gray-500 dark:text-gray-400 text-lg md:text-xl max-w-2xl">
                 SkillMint is an open platform on the Cardano blockchain where builders, developers, creatives, and
                 learners prove their skills by completing challenges and earn on-chain rewards.
               </p>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <Link href="/challenges">
                   <Button size="lg" className="bg-teal-600 hover:bg-teal-700 w-full sm:w-auto">
                     Explore Challenges <ArrowRight className="ml-2 h-4 w-4" />
@@ -64,7 +64,7 @@ export default function Home() {
                 <div className="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center">
                           <Code className="h-5 w-5 text-teal-600 dark:text-teal-400" />
                         </div>
@@ -112,24 +112,24 @@ export default function Home() {
       <FeaturedChallenges />
 
       {/* Benefits Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-gray-900">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
+      <section className="w-full py-12 md:py-20 lg:py-28 bg-gray-50 dark:bg-gray-900">
+        <div className="container px-6 md:px-8 mx-auto max-w-7xl">
+          <div className="flex flex-col items-center justify-center space-y-6 text-center">
+            <div className="space-y-4">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Why SkillMint?</h2>
-              <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+              <p className="max-w-4xl text-gray-500 dark:text-gray-400 text-lg md:text-xl">
                 SkillMint removes traditional barriers to opportunity and creates a new way to build your reputation.
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Card>
-                <CardHeader>
+              <Card className="h-full">
+                <CardHeader className="pb-4">
                   <div className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center mb-4">
                     <FileCheck className="h-6 w-6 text-teal-600 dark:text-teal-400" />
                   </div>
-                  <CardTitle>No Entry Barriers</CardTitle>
+                  <CardTitle className="text-lg">No Entry Barriers</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-500 dark:text-gray-400">
@@ -139,12 +139,12 @@ export default function Home() {
               </Card>
             </motion.div>
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Card>
-                <CardHeader>
+              <Card className="h-full">
+                <CardHeader className="pb-4">
                   <div className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center mb-4">
                     <Award className="h-6 w-6 text-teal-600 dark:text-teal-400" />
                   </div>
-                  <CardTitle>Skill Verification</CardTitle>
+                  <CardTitle className="text-lg">Skill Verification</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-500 dark:text-gray-400">
@@ -154,12 +154,12 @@ export default function Home() {
               </Card>
             </motion.div>
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Card>
-                <CardHeader>
+              <Card className="h-full">
+                <CardHeader className="pb-4">
                   <div className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center mb-4">
                     <Zap className="h-6 w-6 text-teal-600 dark:text-teal-400" />
                   </div>
-                  <CardTitle>Direct Rewards</CardTitle>
+                  <CardTitle className="text-lg">Direct Rewards</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-500 dark:text-gray-400">
@@ -169,8 +169,8 @@ export default function Home() {
               </Card>
             </motion.div>
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Card>
-                <CardHeader>
+              <Card className="h-full">
+                <CardHeader className="pb-4">
                   <div className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center mb-4">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -190,7 +190,7 @@ export default function Home() {
                       <path d="M5 12h14" />
                     </svg>
                   </div>
-                  <CardTitle>Public Reputation</CardTitle>
+                  <CardTitle className="text-lg">Public Reputation</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-500 dark:text-gray-400">
@@ -204,18 +204,18 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 border-t">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
+      <section className="w-full py-12 md:py-20 lg:py-28 border-t">
+        <div className="container px-6 md:px-8 mx-auto max-w-7xl">
+          <div className="flex flex-col items-center justify-center space-y-6 text-center">
+            <div className="space-y-4">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 Ready to Prove Your Skills?
               </h2>
-              <p className="max-w-[600px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+              <p className="max-w-3xl text-gray-500 dark:text-gray-400 text-lg md:text-xl">
                 Join SkillMint today and start building your on-chain skill portfolio.
               </p>
             </div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 size="lg"
                 className="bg-teal-600 hover:bg-teal-700 w-full sm:w-auto"

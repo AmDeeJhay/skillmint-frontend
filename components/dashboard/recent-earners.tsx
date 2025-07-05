@@ -5,13 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Zap } from "lucide-react"
 import { motion } from "framer-motion"
-import { useEffect, useRef, useState } from "react"
 
-interface RecentEarnersProps {
-  scrollMode?: "vertical"
-}
-
-export default function RecentEarners({ scrollMode }: RecentEarnersProps) {
+export default function RecentEarners() {
   const earners = [
     {
       id: 1,
@@ -54,66 +49,6 @@ export default function RecentEarners({ scrollMode }: RecentEarnersProps) {
       time: "4 days ago",
     },
   ]
-
-  // Vertical scroll animation logic
-  const [visibleIndex, setVisibleIndex] = useState(0)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const VISIBLE_COUNT = 3
-
-  useEffect(() => {
-    if (scrollMode === "vertical") {
-      intervalRef.current = setInterval(() => {
-        setVisibleIndex((prev) => (prev + 1) % earners.length)
-      }, 2000)
-      return () => intervalRef.current && clearInterval(intervalRef.current)
-    }
-  }, [scrollMode, earners.length])
-
-  if (scrollMode === "vertical") {
-    // Show only VISIBLE_COUNT earners, scrolling up
-    const items = []
-    for (let i = 0; i < VISIBLE_COUNT; i++) {
-      const idx = (visibleIndex + i) % earners.length
-      items.push(earners[idx])
-    }
-    return (
-      <div className="h-full flex flex-col justify-center overflow-hidden">
-        <div
-          className="flex flex-col transition-transform duration-700"
-          style={{ transform: `translateY(-${visibleIndex * (100 / VISIBLE_COUNT)}%)` }}
-        >
-          {items.map((earner, i) => (
-            <motion.div
-              key={earner.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.1 }}
-              className="flex items-center gap-3 py-2"
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={earner.avatar || "/placeholder.svg"} alt={earner.name} />
-                <AvatarFallback>{earner.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{earner.name}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="flex items-center text-yellow-500">
-                    <Zap className="h-3 w-3 mr-0.5" />
-                    <span className="text-xs font-medium">{earner.amount}</span>
-                  </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">•</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{earner.time}</p>
-                </div>
-              </div>
-              <Badge variant="outline" className="text-xs truncate max-w-[100px]">
-                {earner.challenge}
-              </Badge>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    )
-  }
 
   return (
     <Card>
