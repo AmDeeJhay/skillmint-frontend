@@ -8,6 +8,8 @@ interface BadgeType {
   name: string
   description: string
   earnedAt: string
+  nftTokenId?: string
+  imageUrl?: string
 }
 
 interface Submission {
@@ -15,6 +17,8 @@ interface Submission {
   challengeId: string
   status: string
   submittedAt: string
+  score?: number
+  feedback?: string
 }
 
 interface UserData {
@@ -53,18 +57,24 @@ const mockUserData: UserData = {
       name: "Frontend Master",
       description: "Completed 5 frontend challenges with excellence",
       earnedAt: "2024-11-15T09:00:00Z",
+      nftTokenId: "token_001",
+      imageUrl: "/placeholder.svg?height=100&width=100",
     },
     {
       id: "badge-2",
       name: "Blockchain Pioneer",
       description: "First to complete a blockchain challenge",
       earnedAt: "2024-10-20T16:30:00Z",
+      nftTokenId: "token_002",
+      imageUrl: "/placeholder.svg?height=100&width=100",
     },
     {
       id: "badge-3",
       name: "Smart Contract Expert",
       description: "Successfully deployed 3 smart contracts",
       earnedAt: "2024-12-01T11:45:00Z",
+      nftTokenId: "token_003",
+      imageUrl: "/placeholder.svg?height=100&width=100",
     },
   ],
   submissions: [
@@ -73,12 +83,16 @@ const mockUserData: UserData = {
       challengeId: "1",
       status: "completed",
       submittedAt: "2024-11-20T14:30:00Z",
+      score: 95,
+      feedback: "Excellent implementation with clean code",
     },
     {
       id: "sub-2",
       challengeId: "2",
       status: "completed",
       submittedAt: "2024-11-25T10:15:00Z",
+      score: 88,
+      feedback: "Good solution, minor improvements needed",
     },
     {
       id: "sub-3",
@@ -91,6 +105,8 @@ const mockUserData: UserData = {
       challengeId: "4",
       status: "completed",
       submittedAt: "2024-12-05T13:20:00Z",
+      score: 92,
+      feedback: "Great work on the UI/UX design",
     },
   ],
   createdChallenges: challengesData.slice(0, 4).map((challenge) => ({
@@ -114,11 +130,11 @@ class DashboardService {
 
   public async fetchUserData(userId: string): Promise<UserData> {
     try {
-      console.log(`Attempting to fetch user data for ID: ${userId}`)
+      console.log(`Fetching user data from API for ID: ${userId}`)
 
-      // Try to fetch from API first
-      const response = await this.api.get(`/users/${userId}`)
+      const response = await this.api.get<UserData>(`/users/${userId}`)
       console.log("Successfully fetched user data from API")
+
       return response.data
     } catch (error) {
       console.warn("API unavailable, using mock user data:", error)
@@ -131,6 +147,20 @@ class DashboardService {
           resolve(mockUserData)
         }, 500)
       })
+    }
+  }
+
+  public async updateUserData(userId: string, updates: Partial<UserData>): Promise<UserData | null> {
+    try {
+      console.log(`Updating user data for ID: ${userId}`)
+
+      const response = await this.api.put<UserData>(`/users/${userId}`, updates)
+      console.log("Successfully updated user data")
+
+      return response.data
+    } catch (error) {
+      console.error("Failed to update user data:", error)
+      return null
     }
   }
 
