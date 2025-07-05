@@ -84,6 +84,27 @@ class ChallengeService {
   public getAvailableChallengeIds(): string[] {
     return this.fallbackData.map((challenge) => challenge.id.toString())
   }
+
+  // REST API integration for /challenges endpoints
+  public createChallenge(data: any) {
+    return this.api.post("/challenges", data)
+  }
+
+  public getAllChallenges() {
+    return this.api.get("/challenges")
+  }
+
+  public getChallengeById(id: string) {
+    return this.api.get(`/challenges/${id}`)
+  }
+
+  public updateChallenge(id: string, data: any) {
+    return this.api.patch(`/challenges/${id}`, data)
+  }
+
+  public deleteChallenge(id: string) {
+    return this.api.delete(`/challenges/${id}`)
+  }
 }
 
 const challengeService = new ChallengeService()

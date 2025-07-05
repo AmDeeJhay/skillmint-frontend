@@ -62,9 +62,9 @@ export default function ChallengesPage() {
       case "oldest":
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       case "reward-high":
-        return Number.parseFloat(b.reward) - Number.parseFloat(a.reward)
+        return Number.parseFloat(b.reward as any) - Number.parseFloat(a.reward as any)
       case "reward-low":
-        return Number.parseFloat(a.reward) - Number.parseFloat(b.reward)
+        return Number.parseFloat(a.reward as any) - Number.parseFloat(b.reward as any)
       default:
         return 0
     }

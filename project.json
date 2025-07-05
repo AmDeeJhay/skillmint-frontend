@@ -1,0 +1,14 @@
+{
+  "name": "SkillMint",
+  "tagline": "Prove your skills, Earn Rewards",
+  "description": "SkillMint is a decentralized platform built on the Cardano blockchain that empowers users to build reputations through provable skills and verified challenges. It combines the proof-of-work concept with a challenge-based learning model, leveraging blockchain security, expert validation, and AI voice recognition to ensure authenticity. How it Works, Users connects their wallets, choose a challenge, Submits their work, get verified and earn rewards. SkillMint is designed to be a comprehensive solution for skill verification, offering a transparent, secure, and user-friendly experience.",
+  "team": [
+    {
+      "name": "DivineJustice Samuel",
+      "email": "samueldivine2021@gmail.com"
+    }
+  ],
+  "demo_url": "https://example.com/demo",
+  "video_url": "https://youtube.com/watch?v=your-demo-video",
+  "technologies": ["Next.js", "Tailwind CSS", "NestJS", "PostgreSQL", "Cardano Blockchain", "Vercel", "Render"]
+}
